@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS settings(key text PRIMARY KEY,value text NOT NULL);
+CREATE TABLE IF NOT EXISTS members(email text PRIMARY KEY,role text NOT NULL);
+CREATE TABLE IF NOT EXISTS orders(id text PRIMARY KEY,data text NOT NULL,revision integer NOT NULL DEFAULT 1,created_at text NOT NULL);
+CREATE INDEX IF NOT EXISTS orders_created ON orders(created_at DESC);
+CREATE TABLE IF NOT EXISTS photos(id text PRIMARY KEY,order_id text NOT NULL REFERENCES orders(id),phase text NOT NULL,label text NOT NULL,mime text NOT NULL,actor text NOT NULL,created_at text NOT NULL);
+CREATE INDEX IF NOT EXISTS photos_order ON photos(order_id);
+CREATE TABLE IF NOT EXISTS events(id text PRIMARY KEY,order_id text NOT NULL,actor text NOT NULL,action text NOT NULL,created_at text NOT NULL);
+CREATE INDEX IF NOT EXISTS events_order_date ON events(order_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS sessions(token text PRIMARY KEY,user_id text NOT NULL,expires bigint NOT NULL);
+CREATE TABLE IF NOT EXISTS photo_blobs(id text PRIMARY KEY,bytes bytea NOT NULL);
+CREATE TABLE IF NOT EXISTS accounts(id text PRIMARY KEY,email text UNIQUE NOT NULL,password_hash text NOT NULL,must_change boolean NOT NULL DEFAULT true);
+CREATE TABLE IF NOT EXISTS auth_sessions(token_hash text PRIMARY KEY,user_id text NOT NULL REFERENCES accounts(id),expires bigint NOT NULL);
+CREATE INDEX IF NOT EXISTS auth_sessions_expiry ON auth_sessions(expires);
