@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giặt Là — Quản lý nghiệm thu</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#182230;--muted:#667085;--line:#e4e9f0;--blue:#2563eb;--blue2:#eaf1ff;--green:#15803d;--greenbg:#eaf8ef;--amber:#a16207;--amberbg:#fff7df;--red:#b91c1c;--redbg:#fff0f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:#13243a;color:white;padding:16px 22px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-weight:800;font-size:19px;letter-spacing:.2px}.sub{color:#c7d5e8;font-size:12px}
+header .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+main{max-width:1440px;margin:auto;padding:20px}
+button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:650;background:#edf1f7;color:#233248}
+button.primary{background:var(--blue);color:white}button.success{background:var(--green);color:white}button.danger{background:var(--redbg);color:var(--red)}button.small{padding:6px 9px;font-size:13px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.nav button.active{background:var(--blue);color:white}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+.stat,.panel,.order-card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 2px 7px #1a2b4408}
+.stat .num{font-size:27px;font-weight:800;margin-top:5px}.muted{color:var(--muted)}.tiny{font-size:12px}.layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(310px,.8fr);gap:16px}
+.panel h2{font-size:18px;margin:0 0 13px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:700;color:#344054}
+input,select,textarea{width:100%;border:1px solid #d0d7e2;border-radius:9px;padding:10px 11px;background:white;color:var(--ink)}textarea{min-height:75px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input{max-width:360px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}th{color:var(--muted);font-weight:700}
+.pill{display:inline-flex;align-items:center;border-radius:99px;padding:4px 8px;font-size:12px;font-weight:750;background:#eef2f7;color:#344054;white-space:nowrap}.p-blue{background:var(--blue2);color:#1d4ed8}.p-green{background:var(--greenbg);color:var(--green)}.p-amber{background:var(--amberbg);color:var(--amber)}.p-red{background:var(--redbg);color:var(--red)}
+.orderlist{display:grid;gap:10px}.order-card{padding:13px}.order-head{display:flex;justify-content:space-between;gap:8px;align-items:start}.order-title{font-weight:800}.order-meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:8px 0}.camera-wrap{background:#101828;border-radius:12px;overflow:hidden;position:relative;min-height:220px;display:flex;align-items:center;justify-content:center;color:white}
+video{width:100%;max-height:380px;object-fit:contain;background:#101828} .camera-placeholder{padding:35px;text-align:center;color:#d0d5dd}
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}.photo{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:white}.photo img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.photo div{padding:6px;font-size:11px}
+.item-row{display:grid;grid-template-columns:minmax(0,1fr) 72px 72px 35px;gap:7px;align-items:center;margin-bottom:8px}.item-row input{padding:8px}
+.notice{padding:11px 12px;border-radius:10px;background:#f0f5ff;color:#1e40af;font-size:13px;margin:10px 0}.warning{background:var(--amberbg);color:var(--amber)}.danger-note{background:var(--redbg);color:var(--red)}
+.empty{padding:26px;text-align:center;color:var(--muted);border:1px dashed #ccd5e1;border-radius:12px}
+.hidden{display:none!important}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.section-title h2{margin:0}.section{display:none}.section.active{display:block}
+footer{padding:25px;text-align:center;color:var(--muted);font-size:12px}
+@media(max-width:950px){.stats{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}}
+@media(max-width:600px){main{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}th:nth-child(4),td:nth-child(4){display:none}.item-row{grid-template-columns:minmax(0,1fr) 58px 58px 30px}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">🧺 Giặt Là · Nghiệm thu</div><div class="sub">MVP chạy thử · dữ liệu mẫu lưu trên trình duyệt hiện tại</div></div>
+  <div class="right"><span class="pill" style="background:#243c5a;color:#dbeafe">Chế độ thử nghiệm</span><button id="exportBtn">Xuất dữ liệu JSON</button><button id="importBtn">Nhập JSON</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
+</header>
+<main>
+  <div class="nav">
+    <button class="active" data-tab="dashboard">Tổng quan</button><button data-tab="create">Tạo đơn</button><button data-tab="checkin">Check-in</button><button data-tab="checkout">Check-out</button><button data-tab="orders">Tất cả đơn</button><button data-tab="handover">Bàn giao / tồn kho</button>
+  </div>
+
+  <section id="dashboard" class="section active">
+    <div class="stats" id="stats"></div>
+    <div class="layout">
+      <div class="panel"><div class="section-title"><h2>Đơn cần chú ý</h2><button class="small" onclick="showTab('orders')">Xem tất cả</button></div><div id="attentionList" class="orderlist"></div></div>
+      <div class="panel"><h2>Luồng công việc</h2><div class="notice">1. Tạo đơn → 2. Check-in và chụp ảnh → 3. Đang giặt → 4. Check-out → 5. Bàn giao hoặc ship.</div><p class="muted tiny">Các số liệu trên dashboard được tính từ dữ liệu trên trình duyệt này. Chưa đồng bộ giữa thiết bị.</p><button class="primary" onclick="showTab('create')">＋ Tạo đơn mới</button></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <div class="section-title"><div><h2>🔒 Thống kê riêng của chủ cửa hàng</h2><div class="muted tiny">Số đơn, doanh thu, tiền cọc và công nợ — nhân viên không cần xem phần này.</div></div><button id="statsLockBtn" class="primary">Mở thống kê bằng mật khẩu</button></div>
+      <div id="privateStatsLocked" class="notice">Phần thống kê đang khóa.</div>
+      <div id="privateStatsContent" class="hidden">
+        <div class="toolbar"><label for="statsMonth">Chọn tháng thống kê</label><input id="statsMonth" type="month" style="max-width:190px"><button id="refreshPrivateStats">Cập nhật</button><button id="changeStatsPassword">Đổi mật khẩu</button><button id="lockPrivateStats">Khóa lại</button></div>
+        <div id="privateStatsSummary" class="stats"></div>
+        <h3>Thống kê theo ngày tạo đơn</h3><div style="overflow:auto"><table><thead><tr><th>Ngày</th><th>Số đơn</th><th>Doanh thu dịch vụ</th><th>Tiền cọc</th><th>Còn phải thu</th></tr></thead><tbody id="dailyStatsTable"></tbody></table></div>
+        <h3 style="margin-top:22px">Tổng hợp theo tháng</h3><div style="overflow:auto"><table><thead><tr><th>Tháng</th><th>Số đơn</th><th>Doanh thu dịch vụ</th><th>Tiền cọc</th><th>Còn phải thu</th></tr></thead><tbody id="monthlyStatsTable"></tbody></table></div>
+        <div class="notice warning">Lưu ý: đây là khóa giao diện thử nghiệm trên trình duyệt, chưa phải bảo mật thực sự. Người có quyền truy cập máy hoặc dữ liệu trình duyệt có thể vượt qua khóa. Khi triển khai online cần phân quyền chủ cửa hàng/nhân viên ở máy chủ.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="create" class="section">
+    <div class="panel">
+      <div class="section-title"><h2 id="createTitle">Tạo đơn mới</h2><span class="pill p-blue">Nhập nhanh</span></div>
+      <form id="orderForm">
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+          <div class="field"><label for="customer">Tên khách hàng *</label><input id="customer" required placeholder="Nguyễn Văn A"></div>
+          <div class="field"><label for="phone">Số điện thoại *</label><input id="phone" required inputmode="tel" placeholder="09xxxxxxxx"></div>
+          <div class="field"><label for="dueDate">Ngày hẹn trả *</label><input id="dueDate" required type="date"></div>
+          <div class="field"><label for="deposit">Tiền cọc (VNĐ)</label><input id="deposit" type="number" min="0" value="0"></div>
+          <div class="field"><label for="total">Tổng tiền dịch vụ (VNĐ)</label><input id="total" type="number" min="0" value="0"></div>
+          <div class="field"><label for="delivery">Hình thức nhận hàng</label><select id="delivery"><option value="pickup">Khách tự đến lấy</option><option value="ship">Cần ship</option><option value="unknown">Chưa xác định</option></select></div>
+          <div class="field full"><label for="address">Địa chỉ giao hàng (nếu ship)</label><input id="address" placeholder="Địa chỉ, tòa nhà, ghi chú tìm đường"></div>
+          <div class="field full"><label for="note">Ghi chú / tình trạng đặc biệt</label><textarea id="note" placeholder="Ví dụ: áo trắng, vết bẩn ở cổ tay..."></textarea></div>
+        </div>
+        <div class="actions"><button class="primary" type="submit">Lưu đơn</button><button type="button" id="resetForm">Làm mới</button></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="checkin" class="section">
+    <div class="layout">
+      <div class="panel">
+        <div class="section-title"><h2>Check-in nghiệm thu đầu vào</h2><span class="pill p-blue">Camera USB qua laptop</span></div>
+        <div class="field"><label>Chọn đơn chờ nghiệm thu</label><select id="checkinOrder"></select></div>
+        <div class="camera-wrap" style="margin-top:12px"><video id="video" autoplay playsinline muted class="hidden"></video><div id="cameraPlaceholder" class="camera-placeholder">Camera chưa bật<br><span class="tiny">Cấp quyền camera khi trình duyệt yêu cầu</span></div></div>
+        <div class="field"><label for="cameraSelect">Chọn camera trên thiết bị này</label><select id="cameraSelect"><option value="">Camera mặc định của thiết bị</option></select></div>
+        <div class="actions"><button id="refreshCameras">Tìm camera</button><button class="primary" id="startCamera">Bật camera</button><button id="stopCamera">Tắt camera</button><button class="success" id="capturePhoto">Chụp & lưu ảnh</button></div>
+        <div class="notice">Có thể dùng webcam USB trên laptop hoặc camera tích hợp của điện thoại/tablet. Mở trang bằng HTTPS hoặc localhost và cho phép quyền camera. Nếu có nhiều camera, bấm “Tìm camera” rồi chọn thiết bị cần dùng.</div>
+        <div class="field"><label>Ghi chú ảnh hiện tại</label><input id="photoLabel" placeholder="Ví dụ: nhóm áo sơ mi trắng / vết rách tay áo"></div>
+        <div id="checkinPhotos" class="photos"></div>
+      </div>
+      <div class="panel">
+        <h2>Danh sách đồ nhận vào</h2>
+        <div class="field"><label>Đơn đang chọn</label><div id="checkinOrderSummary" class="notice">Chọn một đơn để bắt đầu.</div></div>
+        <div id="checkinItems"></div>
+        <div class="actions"><button id="addCheckinItem">＋ Thêm loại đồ</button><button class="success" id="finishCheckin">Hoàn tất check-in</button></div>
+        <div id="checkinMessage"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="checkout" class="section">
+    <div class="layout">
+      <div class="panel">
+        <div class="section-title"><h2>Check-out sau giặt</h2><span class="pill p-amber">Đối chiếu số lượng</span></div>
+        <div class="field"><label>Chọn đơn đang xử lý</label><select id="checkoutOrder"></select></div>
+        <div id="checkoutItems" style="margin-top:15px"></div>
+        <div class="actions"><button class="success" id="finishCheckout">Xác nhận check-out</button></div>
+        <div id="checkoutMessage"></div>
+      </div>
+      <div class="panel"><h2>Quy tắc đối chiếu</h2><p>Phần mềm so sánh số lượng đầu vào và đầu ra theo từng loại đồ.</p><div class="notice">Nếu thiếu hoặc thừa, hệ thống sẽ báo và yêu cầu nhập lý do trước khi cho phép xác nhận ngoại lệ.</div><div id="checkoutPhotos" class="photos"></div></div>
+    </div>
+  </section>
+
+  <section id="orders" class="section">
+    <div class="panel">
+      <div class="section-title"><h2>Tất cả đơn hàng</h2><button class="primary" onclick="showTab('create')">＋ Tạo đơn</button></div>
+      <div class="toolbar"><input id="searchOrders" placeholder="Tìm mã đơn, tên khách, số điện thoại..."><select id="statusFilter"><option value="">Tất cả trạng thái</option><option value="new">Chờ nghiệm thu</option><option value="washing">Đang giặt / xử lý</option><option value="ready">Chờ khách lấy / ship</option><option value="completed">Đã bàn giao</option></select></div>
+      <div style="overflow:auto"><table><thead><tr><th>Mã đơn / Khách</th><th>Ngày hẹn</th><th>Trạng thái</th><th>Giao nhận</th><th>Tiền còn</th><th>Thao tác</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="handover" class="section">
+    <div class="panel"><div class="section-title"><h2>Bàn giao / tồn kho</h2><span class="pill p-green">Xác nhận khách nhận</span></div><div class="notice">Chỉ xác nhận đã bàn giao sau khi khách nhận và kiểm tra đủ đồ. Đơn hoàn tất được giữ lại trong bản thử nghiệm; chưa tự xóa.</div><div id="handoverList" class="orderlist"></div></div>
+  </section>
+</main>
+<footer>MVP minh họa · Không dùng dữ liệu khách hàng thật trong bản thử nghiệm. Dữ liệu lưu cục bộ trên trình duyệt này.</footer>
+
+<script>
+const KEY='laundry_mvp_orders_v1';
+let orders=[], stream=null, activeCheckinId=null, activeCheckoutId=null;
+const $=id=>document.getElementById(id);
+const statuses={new:['Chờ nghiệm thu','p-blue'],washing:['Đang giặt / xử lý','p-amber'],ready:['Chờ khách lấy / ship','p-green'],completed:['Đã bàn giao','']};
+function load(){try{orders=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{orders=[]} if(!orders.length){orders=[{id:'GL-261001-001',customer:'Khách mẫu Nguyễn An',phone:'0912345678',dueDate:new Date(Date.now()+86400000).toISOString().slice(0,10),deposit:100000,total:250000,delivery:'pickup',address:'',note:'Dữ liệu mẫu để thử luồng nghiệm thu',status:'new',createdAt:new Date().toISOString(),items:[],photos:[],checkoutItems:[],handoverAt:null,exceptionNote:''}];save()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(orders));renderAll()}
+function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function statusPill(s){let [label,cl]=statuses[s]||['Không rõ',''];return `<span class="pill ${cl}">${label}</span>`}
+function orderById(id){return orders.find(o=>o.id===id)}
+function nextId(){let d=new Date(),date=d.getFullYear().toString().slice(-2)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');let count=orders.filter(o=>o.id.includes(date)).length+1;return `GL-${date}-${String(count).padStart(3,'0')}`}
+function dueText(o){if(!o.dueDate)return '—';let diff=Math.ceil((new Date(o.dueDate+'T23:59:59')-new Date())/86400000);return diff<0?`Quá hạn ${Math.abs(diff)} ngày`:diff===0?'Hôm nay':`Còn ${diff} ngày`}
+function showTab(tab){if(tab!=='dashboard'&&privateStatsUnlocked)lockPrivateStats();document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===tab));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));renderAll();if(tab==='checkin')renderCheckin();if(tab==='checkout')renderCheckout()}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function resetForm(){ $('orderForm').reset();$('editId').value='';$('deposit').value=0;$('total').value=0;$('createTitle').textContent='Tạo đơn mới'}
+$('resetForm').onclick=resetForm;
+$('orderForm').addEventListener('submit',e=>{e.preventDefault();let id=$('editId').value;let data={customer:$('customer').value.trim(),phone:$('phone').value.trim(),dueDate:$('dueDate').value,deposit:Number($('deposit').value||0),total:Number($('total').value||0),delivery:$('delivery').value,address:$('address').value.trim(),note:$('note').value.trim()};if(id){Object.assign(orderById(id),data)}else{orders.unshift({id:nextId(),...data,status:'new',createdAt:new Date().toISOString(),items:[],photos:[],checkoutItems:[],handoverAt:null,exceptionNote:''})}save();resetForm();showTab('orders')});
+function editOrder(id){let o=orderById(id);if(!o)return;$('editId').value=id;['customer','phone','dueDate','deposit','total','address','note'].forEach(k=>$(k).value=o[k]??'');$('delivery').value=o.delivery||'pickup';$('createTitle').textContent='Sửa đơn '+o.id;showTab('create')}
+function deleteOrder(id){if(confirm('Xóa đơn thử nghiệm '+id+'?')){orders=orders.filter(o=>o.id!==id);save()}}
+function itemRow(item={},mode='checkin',idx=0){let qty=mode==='checkin'?'qty':'outQty';return `<div class="item-row"><input data-item-name="${mode}" data-idx="${idx}" placeholder="Tên loại đồ" value="${esc(item.name||'')}"><input type="number" min="0" data-item-qty="${mode}" data-idx="${idx}" title="${mode==='checkin'?'Số lượng nhận':'Số lượng trả'}" value="${Number(item[qty]??(mode==='checkin'?1:0))}"><input type="number" min="0" data-item-out="${mode}" data-idx="${idx}" title="Số lượng ${mode==='checkin'?'dự kiến trả':'thực trả'}" value="${Number(item.outQty??item.qty??0)}" ${mode==='checkout'?'disabled':''}><button class="small danger" data-remove="${mode}" data-idx="${idx}" title="Xóa dòng">×</button></div>`}
+function selectedCheckin(){return orderById($('checkinOrder').value)}
+function renderCheckin(){let sel=$('checkinOrder');let previous=sel.value;sel.innerHTML=orders.filter(o=>o.status==='new').map(o=>`<option value="${o.id}">${esc(o.id)} · ${esc(o.customer)} · ${esc(o.phone)}</option>`).join('');if([...sel.options].some(x=>x.value===previous))sel.value=previous;activeCheckinId=sel.value||null;let o=selectedCheckin();$('checkinOrderSummary').innerHTML=o?`<b>${esc(o.customer)}</b><br>${esc(o.id)} · Hẹn: ${esc(o.dueDate)}<br>${esc(o.note||'Không có ghi chú')}`:'Không có đơn chờ nghiệm thu.';if(o){if(!o.items.length)o.items=[{name:'',qty:1,outQty:1}];$('checkinItems').innerHTML=o.items.map((it,i)=>itemRow(it,'checkin',i)).join('');$('checkinPhotos').innerHTML=(o.photos||[]).map((p,i)=>photoHtml(p,i)).join('')}else{$('checkinItems').innerHTML='';$('checkinPhotos').innerHTML=''}}
+$('checkinOrder').addEventListener('change',renderCheckin);
+$('addCheckinItem').onclick=()=>{let o=selectedCheckin();if(!o)return;o.items.push({name:'',qty:1,outQty:1});save();showTab('checkin')};
+function photoHtml(p,i){return `<div class="photo"><img src="${p.data}" alt="Ảnh nghiệm thu"><div>${esc(p.label||'Ảnh '+(i+1))}<br><span class="muted">${new Date(p.at).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</span></div></div>`}
+$('checkinItems').addEventListener('change',e=>{let o=selectedCheckin();if(!o)return;let idx=Number(e.target.dataset.idx);if(e.target.dataset.itemName==='checkin')o.items[idx].name=e.target.value;if(e.target.dataset.itemQty==='checkin'){o.items[idx].qty=Number(e.target.value||0);o.items[idx].outQty=o.items[idx].qty}if(e.target.dataset.itemOut==='checkin')o.items[idx].outQty=Number(e.target.value||0);save()});
+$('checkinItems').addEventListener('click',e=>{let b=e.target.closest('[data-remove="checkin"]');if(!b)return;let o=selectedCheckin();o.items.splice(Number(b.dataset.idx),1);save();renderCheckin()});
+async function listCameras(){try{if(!navigator.mediaDevices?.enumerateDevices)throw new Error('Trình duyệt không hỗ trợ truy cập camera.');let devices=await navigator.mediaDevices.enumerateDevices();let cams=devices.filter(d=>d.kind==='videoinput');let sel=$('cameraSelect'),previous=sel.value;sel.innerHTML='<option value="">Camera mặc định của thiết bị</option>'+cams.map((d,i)=>`<option value="${esc(d.deviceId)}">${esc(d.label||('Camera '+(i+1)))}</option>`).join('');if(cams.some(d=>d.deviceId===previous))sel.value=previous;if(!cams.length)alert('Chưa phát hiện camera. Hãy bấm Bật camera để cấp quyền, sau đó tìm lại.')}catch(err){alert('Không liệt kê được camera: '+err.message)}}
+async function startCamera(){try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('Trình duyệt chưa cho phép camera. Hãy mở bằng HTTPS hoặc localhost.');if(stream)stopCamera();let deviceId=$('cameraSelect').value;let videoOptions=deviceId?{deviceId:{exact:deviceId}}:{facingMode:{ideal:'environment'}};stream=await navigator.mediaDevices.getUserMedia({video:videoOptions,audio:false});$('video').srcObject=stream;$('video').classList.remove('hidden');$('cameraPlaceholder').classList.add('hidden');await listCameras();if(deviceId)$('cameraSelect').value=deviceId}catch(err){alert('Không mở được camera. Hãy kiểm tra quyền camera, kết nối USB và thử mở bằng HTTPS hoặc localhost. Chi tiết: '+err.message)}}
+function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('video').srcObject=null;$('video').classList.add('hidden');$('cameraPlaceholder').classList.remove('hidden')}
+$('refreshCameras').onclick=listCameras;$('startCamera').onclick=startCamera;$('stopCamera').onclick=stopCamera;$('cameraSelect').addEventListener('change',()=>{if(stream)startCamera()});
+function capture(){let o=selectedCheckin();if(!o){alert('Hãy chọn đơn trước khi chụp.');return}let v=$('video');if(!stream||!v.videoWidth){alert('Hãy bật camera và chờ hình ảnh xuất hiện.');return}let c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);let data=c.toDataURL('image/jpeg',.78);o.photos=o.photos||[];o.photos.push({data,label:$('photoLabel').value.trim()||`Ảnh nghiệm thu ${o.photos.length+1}`,at:new Date().toISOString()});save();renderCheckin()}
+$('capturePhoto').onclick=capture;
+$('finishCheckin').onclick=()=>{let o=selectedCheckin();if(!o)return;if(!o.items.length||o.items.some(i=>!i.name.trim()||Number(i.qty)<0)){alert('Hãy nhập tên loại đồ và số lượng hợp lệ cho tất cả dòng.');return}if(!confirm(`Xác nhận đã nhận ${o.items.reduce((a,i)=>a+Number(i.qty||0),0)} món cho đơn ${o.id}?`))return;o.status='washing';o.checkinAt=new Date().toISOString();save();$('checkinMessage').innerHTML='<div class="notice">Đã hoàn tất check-in. Đơn chuyển sang Đang giặt / xử lý.</div>';renderCheckin()};
+function renderCheckout(){let sel=$('checkoutOrder'),prev=sel.value;sel.innerHTML=orders.filter(o=>o.status==='washing').map(o=>`<option value="${o.id}">${esc(o.id)} · ${esc(o.customer)}</option>`).join('');if([...sel.options].some(x=>x.value===prev))sel.value=prev;let o=orderById(sel.value);activeCheckoutId=sel.value||null;if(!o){$('checkoutItems').innerHTML='<div class="empty">Không có đơn đang xử lý để check-out.</div>';return}o.checkoutItems=o.checkoutItems||o.items.map(i=>({name:i.name,outQty:i.qty}));$('checkoutItems').innerHTML=`<div class="notice"><b>${esc(o.id)} · ${esc(o.customer)}</b><br>Đầu vào: ${o.items.reduce((a,i)=>a+Number(i.qty||0),0)} món · ${o.photos?.length||0} ảnh check-in</div>`+o.items.map((it,i)=>`<div class="item-row"><div><b>${esc(it.name)}</b><div class="tiny muted">Đầu vào: ${Number(it.qty||0)}</div></div><input type="number" min="0" data-out-qty="${i}" value="${Number(o.checkoutItems[i]?.outQty??it.qty)}" title="Số lượng thực trả"><div class="tiny" id="diff-${i}">${Number(o.checkoutItems[i]?.outQty??it.qty)===Number(it.qty)?'<span class="pill p-green">Đủ</span>':`<span class="pill p-red">Lệch ${Number(o.checkoutItems[i]?.outQty??it.qty)-Number(it.qty)}</span>`}</div><span></span></div>`).join('');$('checkoutPhotos').innerHTML=(o.photos||[]).slice(0,6).map(photoHtml).join('')}
+$('checkoutOrder').addEventListener('change',renderCheckout);
+$('checkoutItems').addEventListener('change',e=>{if(!e.target.dataset.outQty)return;let o=orderById($('checkoutOrder').value),i=Number(e.target.dataset.outQty);o.checkoutItems[i]={name:o.items[i].name,outQty:Number(e.target.value||0)};save();renderCheckout()});
+$('finishCheckout').onclick=()=>{let o=orderById($('checkoutOrder').value);if(!o)return;let diffs=o.items.map((it,i)=>({name:it.name,inQty:Number(it.qty||0),outQty:Number(o.checkoutItems[i]?.outQty??it.qty)})).filter(x=>x.inQty!==x.outQty);let reason='';if(diffs.length){reason=prompt('Có sai lệch số lượng:\\n'+diffs.map(d=>`${d.name}: nhận ${d.inQty}, trả ${d.outQty}`).join('\\n')+'\\n\\nNhập lý do / ghi chú ngoại lệ để tiếp tục:');if(reason===null||!reason.trim()){alert('Chưa xác nhận: cần ghi lý do sai lệch.');return}}if(!confirm('Xác nhận check-out và chuyển đơn sang Chờ khách lấy / ship?'))return;o.exceptionNote=reason;o.checkoutAt=new Date().toISOString();o.status='ready';save();$('checkoutMessage').innerHTML='<div class="notice">Đã check-out. Đơn đang chờ bàn giao.</div>';renderCheckout()};
+function orderCard(o){return `<div class="order-card"><div class="order-head"><div><div class="order-title">${esc(o.id)} · ${esc(o.customer)}</div><div class="tiny muted">${esc(o.phone)}</div></div>${statusPill(o.status)}</div><div class="order-meta"><span>📅 ${esc(o.dueDate||'Chưa hẹn')} · ${dueText(o)}</span><span>👕 ${o.items.reduce((a,i)=>a+Number(i.qty||0),0)} món nhận</span><span>💰 Còn ${money(Math.max(0,Number(o.total||0)-Number(o.deposit||0)))}</span></div><div class="actions"><button class="small" onclick="editOrder('${o.id}')">Sửa</button><button class="small" onclick="viewOrder('${o.id}')">Chi tiết</button>${o.status==='ready'?`<button class="small success" onclick="handover('${o.id}')">Xác nhận bàn giao</button>`:''}</div></div>`}
+function viewOrder(id){let o=orderById(id);if(!o)return;alert(`Mã: ${o.id}\\nKhách: ${o.customer}\\nSĐT: ${o.phone}\\nNgày hẹn: ${o.dueDate}\\nTrạng thái: ${statuses[o.status]?.[0]}\\nHình thức: ${o.delivery==='ship'?'Cần ship':o.delivery==='pickup'?'Khách tự lấy':'Chưa xác định'}\\nĐịa chỉ: ${o.address||'—'}\\nTiền cọc: ${money(o.deposit)}\\nTổng tiền: ${money(o.total)}\\nGhi chú: ${o.note||'—'}\\nSố ảnh: ${o.photos?.length||0}\\nNgoại lệ: ${o.exceptionNote||'—'}`)}
+function handover(id){let o=orderById(id);if(!o)return;if(!confirm(`Xác nhận khách đã nhận đủ đồ của đơn ${id}?`))return;o.status='completed';o.handoverAt=new Date().toISOString();save()}
+function renderAll(){renderStats();renderAttention();renderOrdersTable();renderHandover();renderPrivateStats();if($('checkin').classList.contains('active'))renderCheckin();if($('checkout').classList.contains('active'))renderCheckout()}
+function renderStats(){let counts={washing:0,due:0,ready:0,ship:0,completed:0};orders.forEach(o=>{if(o.status==='washing')counts.washing++;if(o.status==='ready')counts.ready++;if(o.status==='completed')counts.completed++;if(o.delivery==='ship'&&o.status==='ready')counts.ship++;if(o.status!=='completed'&&o.dueDate&&new Date(o.dueDate+'T23:59:59')-new Date()<2*86400000)counts.due++});$('stats').innerHTML=[['Đang giặt / xử lý',counts.washing,'p-blue'],['Sắp đến hạn',counts.due,'p-amber'],['Chờ khách lấy',counts.ready,'p-green'],['Cần ship',counts.ship,'p-blue'],['Đã bàn giao',counts.completed,'']].map(x=>`<div class="stat"><div class="muted tiny">${x[0]}</div><div class="num">${x[1]}</div></div>`).join('')}
+function renderAttention(){let list=orders.filter(o=>o.status!=='completed').sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||'')).slice(0,5);$('attentionList').innerHTML=list.length?list.map(orderCard).join(''):'<div class="empty">Chưa có đơn cần chú ý.</div>'}
+function renderOrdersTable(){let q=($('searchOrders')?.value||'').toLowerCase(),f=$('statusFilter')?.value||'';let list=orders.filter(o=>(!f||o.status===f)&&[o.id,o.customer,o.phone].some(x=>String(x||'').toLowerCase().includes(q))).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));$('ordersTable').innerHTML=list.map(o=>`<tr><td><b>${esc(o.id)}</b><br>${esc(o.customer)}<br><span class="muted">${esc(o.phone)}</span></td><td>${esc(o.dueDate||'—')}<br><span class="muted">${dueText(o)}</span></td><td>${statusPill(o.status)}</td><td>${o.delivery==='ship'?'Cần ship':o.delivery==='pickup'?'Khách tự lấy':'Chưa rõ'}<br><span class="muted">${esc(o.address||'')}</span></td><td>${money(Math.max(0,Number(o.total||0)-Number(o.deposit||0)))}</td><td><button class="small" onclick="viewOrder('${o.id}')">Xem</button> <button class="small" onclick="editOrder('${o.id}')">Sửa</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">Không tìm thấy đơn.</td></tr>'}
+$('searchOrders').addEventListener('input',renderOrdersTable);$('statusFilter').addEventListener('change',renderOrdersTable);
+function renderHandover(){let list=orders.filter(o=>o.status==='ready'||o.status==='completed').sort((a,b)=>(a.status==='ready'?-1:1)-(b.status==='ready'?-1:1));$('handoverList').innerHTML=list.length?list.map(o=>`<div class="order-card"><div class="order-head"><div><div class="order-title">${esc(o.id)} · ${esc(o.customer)}</div><div class="order-meta"><span>☎ ${esc(o.phone)}</span><span>📦 ${o.delivery==='ship'?'Cần ship':'Khách tự lấy'}</span><span>📅 Hẹn ${esc(o.dueDate||'—')}</span></div></div>${statusPill(o.status)}</div>${o.status==='ready'?`<div class="actions"><button class="success" onclick="handover('${o.id}')">Xác nhận đã bàn giao</button><button onclick="viewOrder('${o.id}')">Chi tiết</button></div>`:`<div class="tiny muted">Đã bàn giao: ${o.handoverAt?new Date(o.handoverAt).toLocaleString('vi-VN'):'—'} · Dữ liệu vẫn được giữ trong bản MVP.</div>`}</div>`).join(''):'<div class="empty">Chưa có đơn chờ bàn giao hoặc đã hoàn tất.</div>'}
+$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify(orders,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='laundry-orders-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let arr=JSON.parse(await f.text());if(!Array.isArray(arr))throw new Error('Tệp phải chứa danh sách đơn');if(confirm('Nhập dữ liệu sẽ thay thế dữ liệu hiện có trên trình duyệt. Tiếp tục?')){orders=arr;save();alert('Đã nhập dữ liệu.')}}catch(err){alert('Không nhập được: '+err.message)}e.target.value=''};
+
+const STATS_PASS_KEY='laundry_owner_stats_password_v1';
+let privateStatsUnlocked=false;
+function lockPrivateStats(){privateStatsUnlocked=false;$('privateStatsContent').classList.add('hidden');$('privateStatsLocked').classList.remove('hidden');$('statsLockBtn').textContent='Mở thống kê bằng mật khẩu'}
+function openPrivateStats(){
+  let stored=localStorage.getItem(STATS_PASS_KEY);
+  if(!stored){
+    let first=prompt('Thiết lập mật khẩu riêng cho phần thống kê (ít nhất 6 ký tự). Hãy tự lưu lại mật khẩu.');
+    if(first===null)return;
+    if(first.trim().length<6){alert('Mật khẩu cần ít nhất 6 ký tự.');return}
+    let again=prompt('Nhập lại mật khẩu để xác nhận.');
+    if(first!==again){alert('Mật khẩu xác nhận không khớp.');return}
+    localStorage.setItem(STATS_PASS_KEY,first);stored=first;
+    alert('Đã tạo mật khẩu thống kê trên trình duyệt này.');
+  } else {
+    let entered=prompt('Nhập mật khẩu để xem số liệu riêng.');
+    if(entered===null)return;
+    if(entered!==stored){alert('Mật khẩu không đúng.');return}
+  }
+  privateStatsUnlocked=true;$('privateStatsContent').classList.remove('hidden');$('privateStatsLocked').classList.add('hidden');$('statsLockBtn').textContent='Đang mở · khóa thống kê';
+  if(!$('statsMonth').value)$('statsMonth').value=new Date().toISOString().slice(0,7);
+  renderPrivateStats();
+}
+function changeStatsPassword(){if(!privateStatsUnlocked)return;let old=prompt('Nhập mật khẩu hiện tại.');if(old===null)return;if(old!==localStorage.getItem(STATS_PASS_KEY)){alert('Mật khẩu hiện tại không đúng.');return}let next=prompt('Nhập mật khẩu mới (ít nhất 6 ký tự).');if(next===null)return;if(next.trim().length<6){alert('Mật khẩu cần ít nhất 6 ký tự.');return}let again=prompt('Nhập lại mật khẩu mới.');if(next!==again){alert('Mật khẩu xác nhận không khớp.');return}localStorage.setItem(STATS_PASS_KEY,next);alert('Đã đổi mật khẩu trên trình duyệt này.')}
+function renderPrivateStats(){
+ if(!privateStatsUnlocked)return;
+ let month=$('statsMonth').value||new Date().toISOString().slice(0,7);
+ let monthOrders=orders.filter(o=>(o.createdAt||'').slice(0,7)===month);
+ const sum=arr=>arr.reduce((a,o)=>a+Number(o.total||0),0), deposits=arr=>arr.reduce((a,o)=>a+Number(o.deposit||0),0), outstanding=arr=>arr.reduce((a,o)=>a+Math.max(0,Number(o.total||0)-Number(o.deposit||0)),0);
+ $('privateStatsSummary').innerHTML=[['Số đơn trong tháng',monthOrders.length,'p-blue'],['Doanh thu dịch vụ',money(sum(monthOrders)),'p-green'],['Tiền cọc đã ghi nhận',money(deposits(monthOrders)),'p-blue'],['Còn phải thu',money(outstanding(monthOrders)),'p-amber']].map(x=>`<div class="stat"><div class="muted tiny">${x[0]}</div><div class="num" style="font-size:20px">${x[1]}</div></div>`).join('');
+ let days={};monthOrders.forEach(o=>{let d=(o.createdAt||'').slice(0,10)||'Không rõ ngày';(days[d] ||= []).push(o)});
+ $('dailyStatsTable').innerHTML=Object.keys(days).sort((a,b)=>b.localeCompare(a)).map(d=>`<tr><td>${d}</td><td>${days[d].length}</td><td>${money(sum(days[d]))}</td><td>${money(deposits(days[d]))}</td><td>${money(outstanding(days[d]))}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">Chưa có đơn trong tháng này.</td></tr>';
+ let months={};orders.forEach(o=>{let m=(o.createdAt||'').slice(0,7)||'Không rõ tháng';(months[m] ||= []).push(o)});
+ $('monthlyStatsTable').innerHTML=Object.keys(months).sort((a,b)=>b.localeCompare(a)).map(m=>`<tr><td>${m}</td><td>${months[m].length}</td><td>${money(sum(months[m]))}</td><td>${money(deposits(months[m]))}</td><td>${money(outstanding(months[m]))}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">Chưa có dữ liệu.</td></tr>';
+}
+$('statsLockBtn').onclick=()=>{if(privateStatsUnlocked)lockPrivateStats();else openPrivateStats()};
+$('lockPrivateStats').onclick=lockPrivateStats;
+$('changeStatsPassword').onclick=changeStatsPassword;
+$('refreshPrivateStats').onclick=renderPrivateStats;
+$('statsMonth').addEventListener('change',renderPrivateStats);
+
+load();renderAll();renderCheckin();renderCheckout();
+</script>
+</body>
+</html>
